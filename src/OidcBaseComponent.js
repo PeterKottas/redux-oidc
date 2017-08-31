@@ -5,17 +5,6 @@ import { OidcContextType } from './OidcProvider';
 
 class OidcBaseComponent extends React.Component {
     static propTypes = {
-        // the content to render
-        //children: PropTypes.element.isRequired,
-
-        // the userManager
-        //userManager: PropTypes.object.isRequired,
-
-        // a function invoked when the callback succeeds
-        //successCallback: PropTypes.func.isRequired,
-
-        // a function invoked when the callback fails
-        //errorCallback: PropTypes.func
     };
 
     static contextTypes = OidcContextType;
