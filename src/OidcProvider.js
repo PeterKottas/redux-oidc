@@ -2,15 +2,24 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { userExpired, userFound, silentRenewError, sessionTerminated, userExpiring, userSignedOut } from './actions';
 
+export const OidcContextType = {
+  register: PropTypes.func.isRequired,
+  unregister: PropTypes.func.isRequired
+};
+
 class OidcProvider extends React.Component {
   static propTypes = {
     userManager: PropTypes.object.isRequired,
     store: PropTypes.object.isRequired,
   };
 
+  static childContextTypes = OidcContextType;
+
   constructor(props) {
     super(props);
     this.userManager = props.userManager;
+    this.components = {};
+    this.userLoggedIn = false;
   }
 
   componentWillMount() {
@@ -36,6 +45,11 @@ class OidcProvider extends React.Component {
   // event callback when the user has been loaded (on silent renew or redirect)
   onUserLoaded = (user) => {
     this.props.store.dispatch(userFound(user));
+    this.userLoggedIn = true;
+    Object.keys(this.components).forEach(key => {
+      const component = this.components[key];
+      component&&component.userLoggedIn&&component.userLoggedIn();
+    });
   };
 
   // event callback when silent renew errored
@@ -62,6 +76,19 @@ class OidcProvider extends React.Component {
   onUserSignedOut = () => {
     this.props.store.dispatch(userSignedOut());
   }
+
+  register(component) {
+    if (component && component.oidcComponentId) {
+      this.components[component.oidcComponentId] = component;
+      if(this.userLoggedIn){
+        component&&component.userLoggedIn&&component.userLoggedIn();
+      }
+    }
+  };
+
+  unregister(component) {
+    delete this.components[component.oidcComponentId];
+  };
 
   render() {
     return React.Children.only(this.props.children);

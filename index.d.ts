@@ -19,6 +19,8 @@ declare module 'redux-oidc' {
 
     export class CallbackComponent extends React.Component<CallbackComponentProps> { }
 
+    export class OidcComponentBase extends React.Component<void> { }
+
     export interface OidcProviderProps<TSTate> {
         userManager: UserManager;
         store: Store<TSTate>;
